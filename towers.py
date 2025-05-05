@@ -1,14 +1,19 @@
-
+# Imports the Pygame library, which handles graphics, windows, and user input for the game
 import pygame
+# Imports the sys module to handle system tasks, like exiting the game when the player closes the window.
 import sys
+# Imports the heapq module for the A* algorithm’s priority queue (used in a_star_hanoi to pick the best moves).
 import heapq
+# Imports the time module (not used in this snippet but likely for timing in other parts, e.g., delays).
 import time
-
+# Starts Pygame, setting up its systems (graphics, sound, etc.) so the game can run.
 pygame.init()
 
 # Window setup
 WIDTH, HEIGHT = 900, 600
+# Creates the game window with the specified size.
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
+# Sets the window’s title to “Towers of Hanoi - AI Mode” (shown at the top of the window)
 pygame.display.set_caption("Towers of Hanoi - AI Mode")
 
 # Fonts
