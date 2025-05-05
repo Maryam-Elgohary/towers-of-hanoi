@@ -142,13 +142,20 @@ def a_star_hanoi(start_state, goal_state):
 
 # Auto solve using A*
 def auto_solve(state, num_disks):
+    # Creates the goal state, where all disks are stacked on peg 3 (the third peg) in order from largest to smallest
+    # range(1, num_disks + 1) ==> makes a list of disk sizes
     goal_state = [[], [], list(reversed(range(1, num_disks + 1)))]
+    # moves is a list of tuples, where each tuple is a move like (from_peg, to_peg)
     moves = a_star_hanoi(state, goal_state)
+    # loop through each move in the moves list one by one to apply it to the game
     for move in moves:
+        # Each move is a tuple like (1, 3)
         from_peg, to_peg = move
         disk = state[from_peg].pop()
         state[to_peg].append(disk)
+        # Calls the draw_towers function (explained earlier) to redraw the game board with the updated state, showing the towers and disks in their new positions.
         draw_towers(state, num_disks)
+        # Updates the Pygame window to show the new drawing
         pygame.display.flip()
         move_sound.play()
         pygame.time.delay(400)
