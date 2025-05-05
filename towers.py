@@ -76,42 +76,68 @@ def draw_towers(state, num_disks, shake=False):
             pygame.draw.rect(screen, BLACK, rect, 2)
 
 # A* algorithm for Hanoi
+# start_state ==> all disks on tower 1
+# goal_state ==> all disks on tower 3
+# returns a list of moves to get from start to goal
 def a_star_hanoi(start_state, goal_state):
+    # heuristic(state) ==> guesses how far the current state is from the goal
+    # Counts how many disks are not in their goal position (if disk 1 is on tower 1 but should be on tower 3, it adds 1)
+    # A lower number means the state is closer to the goal.
     def heuristic(state):
         return sum(disk not in goal for disk, goal in zip(state, goal_state))
-
+    # converts the state (list of lists) into a tuple so it can be stored in a set ==> track visited states
     def state_to_tuple(state):
         return tuple(tuple(peg) for peg in state)
-
+    # Keeps track of states we’ve already checked to avoid repeating work
     visited = set()
+    # a priority queue 
+    # Cost (0 at the start)
+    # start_state ==> all disks on tower 1 [[1,2,3],[],[]]
+    # [] ==> empty path , list of moves
     heap = [(0, start_state, [])]
-
+    # Keeps going until the queue is empty or the goal is found
+    
     while heap:
+        # Picks the state with the lowest cost
         cost, state, path = heapq.heappop(heap)
-        state_tuple = state_to_tuple(state)
+        state_tuple = state_to_tuple(state) 
+        # Checks if the state was visited before. If yes, skips it to avoid loops. If no, adds the state to visited
         if state_tuple in visited:
             continue
         visited.add(state_tuple)
-
+        # If the current state matches the goal (e.g., all disks on tower 3), returns the path (list of moves).
         if state == goal_state:
             return path
-
+        # Loops through each peg to see if it has disks
         for from_peg in range(3):
+            # skips empty pegs
             if not state[from_peg]:
                 continue
+            # Takes the top disk from from_peg
             disk = state[from_peg][-1]
+            # Tries moving it to each other peg
             for to_peg in range(3):
+                # Skips if from_peg == to_peg (can’t move to the same peg).
                 if from_peg == to_peg:
                     continue
+                # Checks if the move is legal: The destination peg must be empty (not state[to_peg]) or have a larger disk on top (state[to_peg][-1] > disk)
                 if not state[to_peg] or state[to_peg][-1] > disk:
+                    # Creates a new_state by copying the current state.
                     new_state = [list(peg) for peg in state]
+                    # Removes the disk from from_peg
                     new_state[from_peg].pop()
+                    # Adds the disk to to_peg
                     new_state[to_peg].append(disk)
+                    # Adds the new state to the queue with:
+                    # New cost: cost + 1 + heuristic(new_state) (1 for the move, plus the heuristic guess)
+                    # The new state
+                    # Updated path: path + [(from_peg, to_peg)] (adds the move, e.g., “move from peg 1 to peg 3”)
                     heapq.heappush(heap, (
                         cost + 1 + heuristic(new_state),
                         new_state,
                         path + [(from_peg, to_peg)]
                     ))
+    # If the queue runs out without finding the goal, returns [] (no solution)
     return []
 
 # Auto solve using A*
