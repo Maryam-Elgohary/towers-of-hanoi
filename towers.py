@@ -234,54 +234,80 @@ def game_won():
 
 # Main game loop
 def main():
+    # Calls the welcome_screen function (explained earlier) to show the menu and get the number of disks (3 to 6)
     num_disks = welcome_screen()
+    # Sets up the initial game state.
     towers = [list(reversed(range(1, num_disks + 1))), [], []]
-
+    # Creates a “Solve with A*” button at position (680, 40), 180 pixels wide, 40 pixels tall.
     solve_button = pygame.Rect(680, 40, 180, 40)
+    # Creates a “Restart” button below it at (680, 90), same size.
     restart_button = pygame.Rect(680, 90, 180, 40)
-
+    # A flag to track if the player is dragging a disk (starts as False, meaning not dragging)
     dragging = False
+    # Stores which peg the player clicked to pick up a disk (starts as None, meaning no peg selected)
     selected_peg = None
-
+    # Keeps the game running until the player quits or restarts
     while True:
+        # Calls draw_towers (explained earlier) to draw the current state of the towers and disks
         draw_towers(towers, num_disks)
+        # Draws the “Solve with A*” button in red
         pygame.draw.rect(screen, RED, solve_button)
+        # Adds the text “Solve with A*” in white on the button
         screen.blit(FONT.render("Solve with A*", True, WHITE), (solve_button.x + 20, solve_button.y + 8))
+        # Draws the “Restart” button in blue.
         pygame.draw.rect(screen, BLUE, restart_button)
+        # Adds the text “Restart” in white on the button.
         screen.blit(FONT.render("Restart", True, WHITE), (restart_button.x + 50, restart_button.y + 8))
+        # Updates the screen to show the towers, disks, and buttons.
         pygame.display.flip()
-
+        # Checks for player actions like clicking or closing the window.
         for event in pygame.event.get():
+            # If the player closes the window, pygame.quit() and sys.exit() stop the game
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                # If the player clicks the “Solve with A*” button, calls auto_solve(towers, num_disks) (explained earlier) to automatically solve the puzzle.
                 if solve_button.collidepoint(event.pos):
                     auto_solve(towers, num_disks)
                     if towers == [[], [], list(reversed(range(1, num_disks + 1)))]:
                         game_won()
                         return main()
+                # If the player clicks “Restart”, restarts the game by calling return main()
                 elif restart_button.collidepoint(event.pos):
                     return main()
                 else:
+                    # Gets the x-coordinate of the click
                     x = event.pos[0]
+                    # Loops through tower_x
                     for i, tx in enumerate(tower_x):
+                        # Checks if the click is near a peg (within 50 pixels).
                         if abs(x - tx) < 50:
+                            # If the peg has disks, sets dragging = True and selected_peg = i (player is now dragging the top disk from peg i)
                             if towers[i]:
                                 dragging = True
                                 selected_peg = i
+            # If the player releases the mouse while dragging a disk:
             elif event.type == pygame.MOUSEBUTTONUP and dragging:
+                # Gets the x-coordinate of the release
                 x = event.pos[0]
+                # Finds the peg the player dropped the disk on
                 for i, tx in enumerate(tower_x):
                     if abs(x - tx) < 50:
+                        # Checks if the drop peg is different (i != selected_peg) and the move is legal
                         if i != selected_peg and (not towers[i] or towers[i][-1] > towers[selected_peg][-1]):
+                            # if legal: Moves the top disk from selected_peg to the drop peg.
                             towers[i].append(towers[selected_peg].pop())
                             move_sound.play()
+                            # If the puzzle is solved, calls game_won() and restarts with return main()
                             if towers == [[], [], list(reversed(range(1, num_disks + 1)))]:
                                 game_won()
                                 return main()
+                        # Stops checking other pegs after finding the drop peg.
                         break
+                # Stops dragging
                 dragging = False
+                # Clears the selected peg.
                 selected_peg = None
-
+# Starts the game by calling the main function.
 main()
