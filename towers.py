@@ -161,18 +161,27 @@ def auto_solve(state, num_disks):
         pygame.time.delay(400)
 
 # Welcome screen
+# Shows a welcome screen with the game title, the number of disks, and buttons
+# Lets the player adjust the number of disks (between 3 and 6) using “+” and “–” buttons.
+# Starts the game when the player clicks a “Start Game” button
+# Returns the chosen number of disks (e.g., 3, 4, 5, or 6) to use in the game
 def welcome_screen():
+    # Starts with 3 disks as the default number.
     selected_disks = 3
     start_button = pygame.Rect(350, 400, 200, 50)
     minus_button = pygame.Rect(350, 250, 40, 40)
     plus_button = pygame.Rect(510, 250, 40, 40)
-
+    # Keeps the screen running until the player clicks “Start Game” or quits
     while True:
         screen.fill(BG_COLOR)
+        # Creates the text “Towers of Hanoi” in blue using a big font
         title = BIG_FONT.render("Towers of Hanoi", True, BLUE)
+        # Centers the title horizontally at y=100.
+        # blit ==> draws text and buttons on the screen
         screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 100))
-
+        # Shows “Number of disks: 3” (or 4, 5, etc.) in black
         disk_text = FONT.render(f"Number of disks: {selected_disks}", True, BLACK)
+        # Centers it horizontally at y=200.
         screen.blit(disk_text, (WIDTH // 2 - disk_text.get_width() // 2, 200))
 
         pygame.draw.rect(screen, RED, minus_button)
@@ -181,18 +190,23 @@ def welcome_screen():
         screen.blit(FONT.render("+", True, WHITE), (plus_button.x + 12, plus_button.y + 5))
         pygame.draw.rect(screen, BLUE, start_button)
         screen.blit(FONT.render("Start Game", True, WHITE), (start_button.x + 30, start_button.y + 10))
-
+        # Updates the screen to show all the drawings
         pygame.display.flip()
-
+        # Checks for player actions (like clicking or closing the window)
         for event in pygame.event.get():
+            # If the player closes the window, pygame.quit() and sys.exit() stop the program
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            # Checks if the player clicked the mouse.
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                # If the “–” button is clicked and selected_disks is more than 3, decrease selected_disks by 1 (e.g., 4 to 3)
                 if minus_button.collidepoint(event.pos) and selected_disks > 3:
                     selected_disks -= 1
+                # If the “+” button is clicked and selected_disks is less than 6, increase selected_disks by 1 (e.g., 3 to 4).
                 elif plus_button.collidepoint(event.pos) and selected_disks < 6:
                     selected_disks += 1
+                # If the “Start Game” button is clicked, return selected_disks (e.g., 3) to start the game with that number of disks.
                 elif start_button.collidepoint(event.pos):
                     return selected_disks
 
