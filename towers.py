@@ -211,16 +211,22 @@ def welcome_screen():
                     return selected_disks
 
 # Win screen
+# Plays a sound effect (defined elsewhere, like a cheerful tune) to celebrate the player solving the game
 def game_won():
     victory_sound.play()
+    # Loops 4 times to create a back-and-forth shaking effect
     for _ in range(4):
+        # Calls the draw_towers function (explained earlier) to draw the towers, but with no disks ([[], [], []]) and num_disks = 0
+        # shake=True ==> makes the towers wiggle slightly (shifts them by 3 pixels, as set in draw_towers).
         draw_towers([[], [], []], 0, shake=True)
         pygame.display.flip()
         pygame.time.delay(100)
+        # Draws the towers again, but with shake=False (no wiggle, back to normal position)
         draw_towers([[], [], []], 0, shake=False)
         pygame.display.flip()
         pygame.time.delay(100)
     screen.fill(BG_COLOR)
+    # Creates the text “Well Done! Puzzle Solved!” in green using a big font
     msg = BIG_FONT.render("Well Done! Puzzle Solved!", True, GREEN)
     screen.blit(msg, (WIDTH // 2 - msg.get_width() // 2, HEIGHT // 2 - 50))
     pygame.display.flip()
