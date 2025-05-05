@@ -32,23 +32,38 @@ victory_sound = pygame.mixer.Sound("victory.mp3")
 tower_x = [250, 450, 650]
 
 # Draw towers and disks
+# state ==> a list representing the three towers and disks on them [[],[],[]]
+# num_disks ==> total number of disks
+# shake ==> for animation
 def draw_towers(state, num_disks, shake=False):
     screen.fill(BG_COLOR)
     offset = 3 if shake else 0
 
     # Base
+    # 150 - offset ==> X-Coordinates
+    # 500 ==> Y-Coordinates
+    # 600 ==> wide
+    # 10 ==> tall
     pygame.draw.rect(screen, BLACK, (150 - offset, 500, 600, 10))
+    
     # Towers
+    # tower_x ==> contains the X-Coordinates of the three towers
+    # x- 10 ==> centers the tower
     for x in tower_x:
         pygame.draw.rect(screen, BLACK, (x - 10 + offset, 200, 20, 300))
     
     # Disks
     colors = [pygame.Color("#FFADAD"), pygame.Color("#FFD6A5"), pygame.Color("#FDFFB6"),
               pygame.Color("#CAFFBF"), pygame.Color("#9BF6FF"), pygame.Color("#A0C4FF")]
-    
+
+    # loops through the three towers
     for i in range(3):
         tower = state[i]
+        # loops through disks on the tower
+        # j ==> position of the disk from bottom to up
+        # disk ==> disk's size (1 for smallest, 2 for medium, etc)
         for j, disk in enumerate(tower):
+            # disk size
             width = 30 + disk * 20
             rect = pygame.Rect(
                 tower_x[i] - width // 2 + offset,
@@ -57,6 +72,7 @@ def draw_towers(state, num_disks, shake=False):
                 20
             )
             pygame.draw.rect(screen, colors[disk - 1], rect)
+            # draws a 2-pixel-wide-black outline around the disk for visibility
             pygame.draw.rect(screen, BLACK, rect, 2)
 
 # A* algorithm for Hanoi
